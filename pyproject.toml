@@ -1,0 +1,40 @@
+[project]
+name = "mypython"
+dynamic = ["version"]
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+license = "MIT"
+authors = []
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "mypy>=1.17.1",
+    "pre-commit>=4.3.0",
+    "pyright>=1.1.403",
+    "pytest-asyncio>=1.1.0",
+    "pytest>=8.4.1",
+    "ruff>=0.12.9",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/mypython/__init__.py"
+
+[tool.ruff.lint]
+select = ["D", "I"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+asyncio_mode = "auto"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

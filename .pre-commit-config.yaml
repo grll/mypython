@@ -1,0 +1,43 @@
+repos:
+- repo: local
+  hooks:
+    # run ruff linter with fix
+    - id: ruff-check
+      name: ruff check
+      entry: .venv/bin/ruff check
+      language: system
+      types_or: [python, pyi]
+      args: [--fix]
+      require_serial: true
+
+    # run ruff formatter
+    - id: ruff-format
+      name: ruff format
+      entry: .venv/bin/ruff format
+      language: system
+      types_or: [python, pyi]
+      require_serial: true
+
+    # run mypy with strict mode using locally installed mypy
+    - id: mypy
+      name: mypy
+      entry: .venv/bin/mypy
+      language: system
+      types: [python]
+      args: [--strict]
+
+    # run pyright with locally installed pyright
+    - id: pyright
+      name: pyright
+      entry: .venv/bin/pyright
+      language: system
+      types: [python]
+
+    # run pytest with locally installed pytest
+    - id: pytest
+      name: pytest
+      entry: .venv/bin/pytest
+      language: system
+      pass_filenames: false
+      always_run: true
+      types: [python]
