@@ -45,7 +45,7 @@ repos:
     # Run Claude Code to fix markdown files
     - id: claude-markdown
       name: Claude markdown fix
-      entry: scripts/claude-markdown-check.sh
+      entry: scripts/check_markdown.py
       language: system
       files: \.md$
 
