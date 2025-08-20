@@ -9,7 +9,13 @@ from pathlib import Path
 from textwrap import dedent
 
 from claude_code_sdk import ClaudeCodeOptions, query
-from claude_code_sdk.types import AssistantMessage, ToolResultBlock, ToolUseBlock
+from claude_code_sdk.types import (
+    AssistantMessage,
+    ResultMessage,
+    ToolResultBlock,
+    ToolUseBlock,
+    UserMessage,
+)
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
 
@@ -25,21 +31,12 @@ async def check_markdown_file(file_path: Path) -> bool:
     """
     abs_path = file_path.absolute()
 
-    # Read the file content
-    with open(abs_path, "r", encoding="utf-8") as f:
-        content = f.read()
-
-    # Prepare the prompt with the file content
+    # Prepare the prompt
     prompt = dedent(
         f"""
 Fix spelling/grammar errors and ensure proper markdown formatting in the file at {abs_path}.
 
-Current content of the file:
-```markdown
-{content}
-```
-
-Make corrections directly to the file using the Edit tool.
+First, use the Read tool to read the file, then use the Edit tool to make corrections.
 
 Fix **ONLY**:
 - Spelling mistakes
@@ -61,12 +58,26 @@ Do not add explanations, just make the necessary edits.
             cwd=SCRIPTS_DIR.parent,
             model="haiku",
             permission_mode="acceptEdits",  # Allow Edit tool to modify files.
-            allowed_tools=[f"Edit({abs_path})"],
+            allowed_tools=[f"Read({abs_path})", f"Edit({abs_path})"],
             max_turns=2,  # we should only need one turn but edit are not performed in one turn it seems.
         ),
     ):
-        if isinstance(message, AssistantMessage):
+        print(f"Message type: {type(message).__name__}", file=sys.stderr)
+
+        if isinstance(message, UserMessage):
+            print(f"  UserMessage content: {message.content}", file=sys.stderr)
+        elif isinstance(message, ResultMessage):
+            print(f"  ResultMessage result: {message.result}", file=sys.stderr)
+            # Check if the edit was successful by looking at the result
+            if edit_requested:
+                # If we got here and no error occurred, assume the edit was successful
+                modified = True
+        elif isinstance(message, AssistantMessage):
             if message.content:
+                print(
+                    f"  Content blocks: {[type(cb).__name__ for cb in message.content]}",
+                    file=sys.stderr,
+                )
                 for content_block in message.content:
                     if isinstance(content_block, ToolUseBlock):
                         if content_block.name == "Edit" and content_block.input.get(
