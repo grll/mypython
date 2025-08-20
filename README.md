@@ -32,7 +32,7 @@ Install dev dependencies:
 uv sync --extra dev
 ```
 
-The dev dependencies includes linting, type checking and testing.
+The dev dependencies include linting, type checking, and testing.
 
 Install pre-commit hooks:
 
@@ -46,5 +46,12 @@ Run tests:
 uv run pytest
 ```
 
-## Project Maintainance
+## Project Maintenance
 
+**Note:** Make sure you are on the main branch and your git status is clean before doing the following.
+
+You can create a new GitHub release while bumping the version of your package via the bump_version script:
+
+```bash
+./scripts/bump_version.py
+```

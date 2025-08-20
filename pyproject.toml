@@ -3,7 +3,7 @@ name = "mypython"
 dynamic = ["version"]
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 license = "MIT"
 authors = []
 dependencies = []
@@ -16,6 +16,8 @@ dev = [
     "pytest-asyncio>=1.1.0",
     "pytest>=8.4.1",
     "ruff>=0.12.9",
+    "jupyter>=1.1.1",
+    "claude-code-sdk>=0.0.20",
 ]
 
 [build-system]

@@ -41,3 +41,11 @@ repos:
       pass_filenames: false
       always_run: true
       types: [python]
+
+    # Run Claude Code to fix markdown files
+    - id: claude-markdown
+      name: Claude markdown fix
+      entry: scripts/claude-markdown-check.sh
+      language: system
+      files: \.md$
+
