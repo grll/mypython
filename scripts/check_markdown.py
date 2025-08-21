@@ -30,6 +30,7 @@ async def check_markdown_file(file_path: Path) -> bool:
         True if file was modified, False otherwise
     """
     abs_path = file_path.absolute()
+    print(abs_path, file=sys.stderr)
 
     # Prepare the prompt
     prompt = dedent(
@@ -38,6 +39,8 @@ Fix spelling/grammar errors and ensure proper markdown formatting in the file at
 
 First, use the Read tool to read the file, then use the Edit tool to make corrections.
 
+IMPORTANT: When using the Edit tool, use only the actual file content without line numbers. The Read tool shows line numbers like "1→", but when editing, use only the text after the line number and arrow.
+
 Fix **ONLY**:
 - Spelling mistakes
 - Grammar errors  
@@ -45,6 +48,8 @@ Fix **ONLY**:
 
 DO NOT change the content or meaning of the file, only fix clear errors.
 Do not add explanations, just make the necessary edits.
+
+IF the file is already correct, do not make any changes.
 """.strip()
     )
 
@@ -57,8 +62,8 @@ Do not add explanations, just make the necessary edits.
         options=ClaudeCodeOptions(
             cwd=SCRIPTS_DIR.parent,
             model="haiku",
-            permission_mode="acceptEdits",  # Allow Edit tool to modify files.
-            allowed_tools=[f"Read({abs_path})", f"Edit({abs_path})"],
+            # permission_mode="acceptEdits",  # Allow Edit tool to modify files.
+            allowed_tools=["Read(/{abs_path})", "Edit(/{abs_path})"],
             max_turns=2,  # we should only need one turn but edit are not performed in one turn it seems.
         ),
     ):
@@ -114,7 +119,7 @@ async def process_file(file_path: Path) -> tuple[Path, bool, str | None]:
         Tuple of (file_path, was_modified, error_message)
     """
     try:
-        print(f"Checking {file_path}...", file=sys.stderr)
+        print(f"Checking /{file_path}...", file=sys.stderr)
         modified = await check_markdown_file(file_path)
         if modified:
             print(f"File modified: {file_path}", file=sys.stderr)
