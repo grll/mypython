@@ -46,5 +46,57 @@ Run tests:
 uv run pytest
 ```
 
-## Project Maintainance
+## Project Maintenance
+
+### Version Management
+
+This project includes a `bump_version.py` script to automate version bumping and release creation. The script:
+- Updates the version in `src/mypython/__init__.py`
+- Creates a git commit with the version change
+- Tags the commit with the new version
+- Pushes the changes and tags to GitHub
+- Creates a GitHub release with auto-generated release notes
+
+#### Usage
+
+```bash
+# Bump patch version (e.g., 1.0.0 -> 1.0.1)
+python scripts/bump_version.py patch
+
+# Bump minor version (e.g., 1.0.0 -> 1.1.0)
+python scripts/bump_version.py minor
+
+# Bump major version (e.g., 1.0.0 -> 2.0.0)
+python scripts/bump_version.py major
+```
+
+### PyPI Publishing Setup
+
+This template includes a GitHub Actions workflow for automatic PyPI publishing when releases are created. To enable this, you need to configure PyPI Trusted Publisher:
+
+#### Steps to Configure PyPI Trusted Publisher
+
+1. **Create your package on PyPI** (if not already exists):
+   - Go to [PyPI](https://pypi.org)
+   - Upload an initial version manually or create a placeholder
+
+2. **Configure Trusted Publisher on PyPI**:
+   - Go to your project page on PyPI
+   - Navigate to "Settings" → "Publishing"
+   - Under "Trusted Publishers", click "Add a new publisher"
+   - Fill in the following details:
+     - **Owner**: Your GitHub username or organization
+     - **Repository name**: Your repository name
+     - **Workflow name**: `release.yml`
+     - **Environment**: Leave blank (optional)
+   - Click "Add"
+
+3. **Verify the GitHub Actions workflow**:
+   - The `.github/workflows/release.yml` file is already configured in this template
+   - It will automatically trigger when you create a new release (using `bump_version.py` or manually)
+   - The workflow will build and publish your package to PyPI using trusted publishing (no API tokens needed!)
+
+Once configured, your release process becomes:
+1. Run `python scripts/bump_version.py [major|minor|patch]` to create a release
+2. GitHub Actions automatically publishes to PyPI using trusted publishing
 
